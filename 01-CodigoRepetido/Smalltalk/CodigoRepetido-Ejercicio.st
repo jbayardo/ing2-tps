@@ -34,76 +34,64 @@ TestCase subclass: #IdiomTest
 	poolDictionaries: ''
 	category: 'CodigoRepetido-Ejercicio'!
 
-!IdiomTest methodsFor: 'testing' stamp: 'JB 9/4/2017 19:35:57'!
-executing: aClosure hasError: error andAfterwards: aSecondClosure
-
-	[aClosure value.
-	 self fail] on: error
-			   do: aSecondClosure! !
-
-!IdiomTest methodsFor: 'testing' stamp: 'JB 9/4/2017 19:36:43'!
-takesLessThan: aTimeSpan message: aMessage
-
+!IdiomTest methodsFor: 'testing' stamp: 'JB 9/5/2017 19:52:12'!
+closure: aClosure runsInUpToMillis: aNumberOfMilliseconds
 	| stopwatch |
-
-	stopwatch := Stopwatch new.
+	stopwatch _ Stopwatch new.
 	stopwatch start.
-	aMessage value.
-	^ stopwatch elapsedTime < aTimeSpan! !
+	aClosure value.
+	^ stopwatch elapsedTime < aNumberOfMilliseconds.! !
 
-!IdiomTest methodsFor: 'testing' stamp: 'JB 9/4/2017 18:31:09'!
+!IdiomTest methodsFor: 'testing' stamp: 'JB 9/5/2017 19:49:40'!
+closure: aClosure throws: anError andAfterwards: aValidatingClosure
+	[aClosure value.
+	self fail ]
+		on: anError
+		do: aValidatingClosure.! !
+
+!IdiomTest methodsFor: 'testing' stamp: 'JB 9/5/2017 19:52:13'!
 test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 	| customerBook |
-	
-	customerBook := CustomerBook  new.
-	self assert: (self takesLessThan: 50
-						message: [customerBook addCustomerNamed: 'John Lennon'])
-	
-! !
+	customerBook _ CustomerBook new.
+	self assert:
+		(self
+			closure: [ customerBook addCustomerNamed: 'John Lennon' ]
+			runsInUpToMillis: 50).! !
 
-!IdiomTest methodsFor: 'testing' stamp: 'JB 9/4/2017 18:36:15'!
+!IdiomTest methodsFor: 'testing' stamp: 'JB 9/5/2017 19:52:12'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
-
 	| customerBook paulMcCartney |
-	
-	customerBook := CustomerBook  new.
-	paulMcCartney := 'Paul McCartney'.
-	
+	customerBook _ CustomerBook new.
+	paulMcCartney _ 'Paul McCartney'.
 	customerBook addCustomerNamed: paulMcCartney.
-	
-	self assert: (self takesLessThan: 100
-						message: [customerBook removeCustomerNamed: paulMcCartney])! !
+	self assert:
+		(self
+			closure: [ customerBook removeCustomerNamed: paulMcCartney ]
+			runsInUpToMillis: 100).! !
 
-!IdiomTest methodsFor: 'testing' stamp: 'JB 9/4/2017 19:33:54'!
-test03CanNotAddACustomerWithEmptyName 
-
+!IdiomTest methodsFor: 'testing' stamp: 'JB 9/5/2017 19:47:20'!
+test03CanNotAddACustomerWithEmptyName
 	| customerBook |
-			
-	customerBook := CustomerBook new.
-	
+	customerBook _ CustomerBook new.
 	self
-		executing: [ customerBook addCustomerNamed: '' ]
-		hasError: Error
-		andAfterwards: [ :anError | 
+		closure: [ customerBook addCustomerNamed: '' ]
+		throws: Error
+		andAfterwards: [ :anError |
 			self assert: anError messageText = CustomerBook customerCanNotBeEmptyErrorMessage.
-			self assert: customerBook isEmpty ]! !
+			self assert: customerBook isEmpty ].! !
 
-!IdiomTest methodsFor: 'testing' stamp: 'JB 9/4/2017 19:35:33'!
+!IdiomTest methodsFor: 'testing' stamp: 'JB 9/5/2017 19:47:20'!
 test04CanNotRemoveAnInvalidCustomer
-	
 	| customerBook johnLennon |
-			
-	customerBook := CustomerBook new.
-	johnLennon := 'John Lennon'.
+	customerBook _ CustomerBook new.
+	johnLennon _ 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
-	
 	self
-		executing: [ customerBook removeCustomerNamed: 'Paul McCartney' ]
-		hasError: NotFound 
-		andAfterwards: [ :anError | 
+		closure: [ customerBook removeCustomerNamed: 'Paul McCartney' ]
+		throws: NotFound
+		andAfterwards: [ :anError |
 			self assert: customerBook numberOfCustomers = 1.
-			self assert: (customerBook includesCustomerNamed: johnLennon) ]
-! !
+			self assert: (customerBook includesCustomerNamed: johnLennon) ].! !
 
 
 !classDefinition: #CustomerBook category: #'CodigoRepetido-Ejercicio'!
