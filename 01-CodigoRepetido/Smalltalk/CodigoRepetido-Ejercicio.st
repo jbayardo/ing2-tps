@@ -61,8 +61,8 @@ test01AddingCustomerShouldNotTakeMoreThan50Milliseconds
 !IdiomTest methodsFor: 'testing' stamp: 'JB 9/5/2017 19:52:12'!
 test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 	| customerBook paulMcCartney |
-	customerBook _ CustomerBook new.
-	paulMcCartney _ 'Paul McCartney'.
+	customerBook := CustomerBook new.
+	paulMcCartney := 'Paul McCartney'.
 	customerBook addCustomerNamed: paulMcCartney.
 	self assert:
 		(self
@@ -72,7 +72,7 @@ test02RemovingCustomerShouldNotTakeMoreThan100Milliseconds
 !IdiomTest methodsFor: 'testing' stamp: 'JB 9/5/2017 19:47:20'!
 test03CanNotAddACustomerWithEmptyName
 	| customerBook |
-	customerBook _ CustomerBook new.
+	customerBook := CustomerBook new.
 	self
 		closure: [ customerBook addCustomerNamed: '' ]
 		throws: Error
@@ -83,8 +83,8 @@ test03CanNotAddACustomerWithEmptyName
 !IdiomTest methodsFor: 'testing' stamp: 'JB 9/5/2017 19:47:20'!
 test04CanNotRemoveAnInvalidCustomer
 	| customerBook johnLennon |
-	customerBook _ CustomerBook new.
-	johnLennon _ 'John Lennon'.
+	customerBook := CustomerBook new.
+	johnLennon := 'John Lennon'.
 	customerBook addCustomerNamed: johnLennon.
 	self
 		closure: [ customerBook removeCustomerNamed: 'Paul McCartney' ]
