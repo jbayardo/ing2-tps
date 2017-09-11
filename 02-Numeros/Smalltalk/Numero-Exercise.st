@@ -282,55 +282,55 @@ initalizeWith: aValue
 	value := aValue! !
 
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:36:03'!
-* aMultiplier 
+!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:47:18'!
+* aMultiplier
+	^ aMultiplier multiplyInteger: self.! !
 
-	^ aMultiplier productoPorEntero: self.! !
+!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:43:58'!
++ anAdder
+	^ anAdder addInteger: self.! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:40:52'!
-+ anAdder 
-	^ anAdder sumaPorEntero: self.! !
-
-!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:47:49'!
-/ aDivisor 
-	^ aDivisor divisionPorEnteroInversa: self.
-! !
+!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:53:18'!
+/ aDivisor
+	^ aDivisor divideInteger: self.! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 21:55'!
 // aDivisor 
 	
 	^self class with: value // aDivisor integerValue! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:47:33'!
-divisionPorEnteroInversa: aDivisor
-	^ Fraccion with: aDivisor over: self.! !
+!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:43:58'!
+addFractional: aFractionalSummand
+	^ aFractionalSummand addInteger: self.! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:51:57'!
-divisionPorFraccionInversa: aDivisor
-	^Fraccion with: aDivisor numerator over: aDivisor denominator * self.! !
+!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:43:58'!
+addInteger: anIntegerSummand
+	^ self class with: value + anIntegerSummand integerValue.! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:53:50'!
+divideFractional: aFractionalDividend
+	^ Fraccion
+		with: aFractionalDividend numerator
+		over: aFractionalDividend denominator * self.! !
+
+!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:54:11'!
+divideInteger: anIntegerDividend
+	^ Fraccion
+		with: anIntegerDividend
+		over: self.! !
 
 !Entero methodsFor: 'arithmetic operations' stamp: 'HernanWilkinson 5/7/2016 21:00'!
 greatestCommonDivisorWith: anEntero 
 	
 	^self class with: (value gcd: anEntero integerValue)! !
 
-!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:37:16'!
-productoPorEntero: aMultiplier
+!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:47:18'!
+multiplyFractional: aFractionalFactor
+	^ aFractionalFactor multiplyInteger: self.! !
 
-	^self class with: value * aMultiplier integerValue.! !
-
-!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:34:51'!
-productoPorFraccion: aMultiplier
-	^Fraccion with: self * aMultiplier numerator over: aMultiplier denominator.! !
-
-!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:41:26'!
-sumaPorEntero: anAdder
-	^ self class with: value + anAdder integerValue.
-! !
-
-!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:41:47'!
-sumaPorFraccion: anAdder
-	^ Fraccion with: (self * anAdder denominator) + (anAdder numerator) over: anAdder denominator.! !
+!Entero methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:47:18'!
+multiplyInteger: anIntegerFactor
+	^ self class with: value * anIntegerFactor integerValue.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -387,51 +387,50 @@ hash
 	^(numerator hash / denominator hash) hash! !
 
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:32:13'!
-* aMultiplier 
-	
-	^ aMultiplier productoPorFraccion: self.! !
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:47:01'!
+* aMultiplier
+	^ aMultiplier multiplyFractional: self.! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:42:39'!
-+ anAdder 
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:43:32'!
++ anAdder
+	^ anAdder addFractional: self.! !
 
-	^ anAdder sumaPorFraccion: self.! !
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:53:04'!
+/ aDivisor
+	^ aDivisor divideFractional: self.! !
 
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:49:56'!
-/ aDivisor 
-	^ aDivisor divisionPorFraccionInversa: self.! !
-
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:49:18'!
-divisionPorEnteroInversa: aDivisor
-
-	^Fraccion with: aDivisor * self denominator over: self numerator.! !
-
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:51:04'!
-divisionPorFraccionInversa: aDivisor
-	^(aDivisor numerator * denominator) / (aDivisor denominator * numerator).
-! !
-
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:40:03'!
-productoPorEntero: aMultiplier
-	^ Fraccion with: self numerator * aMultiplier over: self denominator.
-	! !
-
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:33:04'!
-productoPorFraccion: aMultiplier 
-	^(numerator * aMultiplier numerator) / (denominator * aMultiplier denominator)! !
-
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:45:12'!
-sumaPorEntero: anAdder
-	^ Fraccion with: self numerator + (anAdder * self denominator) over: self denominator.	
-! !
-
-!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/7/2017 21:43:30'!
-sumaPorFraccion: anAdder
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:48:08'!
+addFractional: aFractionalSummand
 	| newNumerator newDenominator |
-	newNumerator := (numerator * anAdder denominator) + (denominator * anAdder numerator).
-	newDenominator := denominator * anAdder denominator.
-	^newNumerator / newDenominator 
-! !
+	newNumerator _ numerator * aFractionalSummand denominator + (denominator * aFractionalSummand numerator).
+	newDenominator _ denominator * aFractionalSummand denominator.
+	^ newNumerator / newDenominator.! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:48:19'!
+addInteger: anIntegerSummand
+	^ Fraccion
+		with: self numerator + (anIntegerSummand * self denominator)
+		over: self denominator.! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:53:04'!
+divideFractional: aFractionalDividend
+	^ aFractionalDividend numerator * denominator / (aFractionalDividend denominator * numerator).! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:53:18'!
+divideInteger: anIntegerDividend
+	^ Fraccion
+		with: anIntegerDividend * self denominator
+		over: self numerator.! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:48:38'!
+multiplyFractional: aFractionalFactor
+	^ numerator * aFractionalFactor numerator / (denominator * aFractionalFactor denominator).! !
+
+!Fraccion methodsFor: 'arithmetic operations' stamp: 'JB 9/8/2017 11:48:49'!
+multiplyInteger: anIntegerFactor
+	^ Fraccion
+		with: self numerator * anIntegerFactor
+		over: self denominator.! !
 
 
 !Fraccion methodsFor: 'accessing' stamp: 'HernanWilkinson 5/7/2016 21:56'!
