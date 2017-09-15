@@ -14,7 +14,7 @@ test01StackShouldBeEmptyWhenCreated
 	
 	self assert: stack isEmpty! !
 
-!OOStackTest methodsFor: 'test' stamp: 'HernanWilkinson 5/7/2012 11:30'!
+!OOStackTest methodsFor: 'test' stamp: 'JB 9/12/2017 18:30:50'!
 test02PushAddElementsToTheStack
 
 	| stack |
@@ -22,7 +22,7 @@ test02PushAddElementsToTheStack
 	stack := OOStack new.
 	stack push: 'Something'.
 	
-	self deny: stack isEmpty! !
+ 	self deny: stack isEmpty! !
 
 !OOStackTest methodsFor: 'test' stamp: 'HernanWilkinson 5/7/2012 11:31'!
 test03PopRemovesElementsFromTheStack
@@ -137,18 +137,141 @@ test10CanNotTopWhenThereAreNoObjectsInTheStack
 ! !
 
 
-!classDefinition: #OOStack category: #'Stack-Exercise'!
-Object subclass: #OOStack
+!classDefinition: #Node category: #'Stack-Exercise'!
+Object subclass: #Node
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Stack-Exercise'!
+
+!Node methodsFor: 'accessing' stamp: 'JB 9/14/2017 20:15:12'!
+next
+	^ self subclassResponsibility.! !
+
+!Node methodsFor: 'accessing' stamp: 'JB 9/14/2017 20:15:22'!
+size
+	^ self subclassResponsibility.! !
+
+!Node methodsFor: 'accessing' stamp: 'JB 9/14/2017 20:17:06'!
+value
+	^ self subclassResponsibility.! !
+
+
+
+!classDefinition: #EmptyNode category: #'Stack-Exercise'!
+Node subclass: #EmptyNode
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+
+!EmptyNode methodsFor: 'accessing' stamp: 'JB 9/14/2017 20:24:12'!
+next
+	self error: OOStack stackEmptyErrorDescription.! !
+
+!EmptyNode methodsFor: 'accessing' stamp: 'JB 9/14/2017 20:24:24'!
+size
+	^ 0.! !
+
+!EmptyNode methodsFor: 'accessing' stamp: 'JB 9/14/2017 20:24:20'!
+value
+	self error: OOStack stackEmptyErrorDescription.! !
+
+
+!classDefinition: #NonEmptyNode category: #'Stack-Exercise'!
+Node subclass: #NonEmptyNode
+	instanceVariableNames: 'next element'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!NonEmptyNode methodsFor: 'initialization' stamp: 'JB 9/15/2017 20:10:41'!
+initializeFor: anElement withNext: aNode
+	element := anElement.
+	next := aNode.
+	^ self.! !
+
+
+!NonEmptyNode methodsFor: 'accessing' stamp: 'JB 9/14/2017 20:20:57'!
+next
+	^ next.! !
+
+!NonEmptyNode methodsFor: 'accessing' stamp: 'JB 9/15/2017 20:10:17'!
+size
+	" Este cómputo es recursivo porque nos gusta la recursión. Podría también guardarse un colaborador interno con el tamaño sin demasiado trabajo. "
+	^ self next size + 1.! !
+
+!NonEmptyNode methodsFor: 'accessing' stamp: 'JB 9/14/2017 20:23:22'!
+value
+	^ element.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'NonEmptyNode class' category: #'Stack-Exercise'!
+NonEmptyNode class
+	instanceVariableNames: ''!
+
+!NonEmptyNode class methodsFor: 'as yet unclassified' stamp: 'JB 9/15/2017 16:32:33'!
+for: anElement withNext: aNextNode
+	^ self new initializeFor: anElement withNext: aNextNode.! !
+
+
+!classDefinition: #OOStack category: #'Stack-Exercise'!
+Object subclass: #OOStack
+	instanceVariableNames: 'headNode'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'Stack-Exercise'!
+
+!OOStack methodsFor: 'accessing' stamp: 'JB 9/15/2017 20:08:46'!
+isEmpty
+	" Esto podría hacerse agregando el método isEmpty a Node, pero preferimos utilizar esto porque nos parece más declarativo: es el stack el que está vacio, no el nodo en sí. Observemos que no comparamos contra class directo, si no que preguntamos si isKindOf. Esto nos permite extender el comportamiento de EmptyNode si fuese necesario, pero sin perder la noción de que no debería haber otro null object dentro de Node. "
+	^ self first isKindOf: EmptyNode.! !
+
+!OOStack methodsFor: 'accessing' stamp: 'JB 9/15/2017 19:58:25'!
+size
+	^ self first size.! !
+
+!OOStack methodsFor: 'accessing' stamp: 'JB 9/15/2017 19:58:25'!
+top
+	^ self first value.! !
+
+
+!OOStack methodsFor: 'private' stamp: 'JB 9/15/2017 19:58:25'!
+first
+	^ headNode.! !
+
+!OOStack methodsFor: 'private' stamp: 'JB 9/15/2017 19:58:52'!
+setFirst: aNode
+	headNode _ aNode.! !
+
+
+!OOStack methodsFor: 'adding' stamp: 'JB 9/15/2017 19:58:52'!
+push: anElement
+	| node |
+	node _ NonEmptyNode
+		for: anElement
+		withNext: self first.
+	self setFirst: node.! !
+
+
+!OOStack methodsFor: 'removing' stamp: 'JB 9/15/2017 19:58:52'!
+pop
+	| top |
+	top _ self top.
+	self setFirst: self first next.
+	^ top.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'OOStack class' category: #'Stack-Exercise'!
 OOStack class
 	instanceVariableNames: ''!
+
+!OOStack class methodsFor: 'error descriptions' stamp: 'JB 9/15/2017 19:58:52'!
+new
+	^ super new setFirst: EmptyNode new.! !
 
 !OOStack class methodsFor: 'error descriptions' stamp: 'HernanWilkinson 5/7/2012 11:51'!
 stackEmptyErrorDescription
