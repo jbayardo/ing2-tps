@@ -1,499 +1,1 @@
-!classDefinition: #PortfolioTest category: #'Portfolio-Ejercicio'!
-TestCase subclass: #PortfolioTest
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Portfolio-Ejercicio'!
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/12/2011 13:25'!
-test01ReceptiveAccountHaveZeroAsBalanceWhenCreated 
-
-	| account |
-	
-	account := ReceptiveAccount new.
-
-	self assert: 0 = account balance .
-! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/12/2011 13:25'!
-test02DepositIncreasesBalanceOnTransactionValue 
-
-	| account |
-	
-	account := ReceptiveAccount  new.
-	Deposit register: 100 on: account.
-		
-	self assert: 100 = account balance .
-! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 7/13/2011 18:46'!
-test03WithdrawDecreasesBalanceOnTransactionValue 
-
-	| account |
-	
-	account := ReceptiveAccount new.
-	Deposit register: 100 on: account.
-	Withdraw register: -50 on: account.
-		
-	self assert: 50 = account balance .
-! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/12/2011 13:25'!
-test04PortfolioBalanceIsSumOfManagedAccountsBalance
-
-	| account1 account2 complexPortfolio |
-	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	complexPortfolio := Portfolio with: account1 with: account2.
-	 	
-	Deposit register: 100 on: account1.
-	Deposit register: 200 on: account2.
-		
-	self assert:300 = complexPortfolio balance .
-! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/12/2011 13:25'!
-test05PortfolioCanManagePortfolios
-
-	| account1 account2 account3 complexPortfolio composedPortfolio |
-	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	account3 := ReceptiveAccount new.
-	complexPortfolio := Portfolio with: account1 with: account2.
-	composedPortfolio := Portfolio with: complexPortfolio with: account3.
-		
-	Deposit register: 100 on:account1.
-	Deposit register: 200 on: account2.
-	Deposit register: 300 on: account3.
-
-	self assert: 600 = composedPortfolio balance .! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/12/2011 13:26'!
-test06ReceptiveAccountKnowsRegisteredTransactions 
-
-	| account deposit withdraw |
-	
-	account := ReceptiveAccount new.
-	deposit := Deposit register: 100 on: account.
-	withdraw := Withdraw register: -50 on: account.
-		
-	self assert: (account registers: deposit).
-	self assert: (account registers: withdraw).
-! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/12/2011 13:26'!
-test07ReceptiveAccountDoNotKnowNotRegisteredTransactions
-
-	| account deposit withdraw |
-	
-	account := ReceptiveAccount new.
-	deposit :=  Deposit for: 100.
-	withdraw := Withdraw for: -50.
-		
-	self deny: (account registers: deposit).
-	self deny: (account registers:withdraw).
-! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/26/2011 16:56'!
-test08PortfolioKnowsTransactionsRegisteredByItsManagedAccounts 
-
-	| account1 account2 account3 complexPortfolio composedPortfolio deposit1 deposit2 deposit3 |
-	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	account3 := ReceptiveAccount new.
-	complexPortfolio := Portfolio with: account1 with: account2.
-	composedPortfolio := Portfolio with: complexPortfolio with: account3.
-		
-	deposit1 := Deposit register: 100 on: account1.
-	deposit2 := Deposit register: 200 on: account2.
-	deposit3 := Deposit register: 300 on: account3.
-		
- 	self assert: (composedPortfolio registers: deposit1).
-	self assert: (composedPortfolio registers: deposit2).
-	self assert: (composedPortfolio registers: deposit3).! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/12/2011 13:24'!
-test10ReceptiveAccountManageItSelf 
-
-	| account1 |
-	
-	account1 := ReceptiveAccount new.
-		
-	self assert: (account1 manages:account1).
-! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/12/2011 13:24'!
-test11ReceptiveAccountDoNotManageOtherAccount
-
-	| account1 account2 |
-	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-		
-	self deny: (account1 manages: account2).
-! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/12/2011 13:24'!
-test12PortfolioManagesComposedAccounts
-
-	| account1 account2 account3 complexPortfolio |
-	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	account3 := ReceptiveAccount new.
-	complexPortfolio := Portfolio with: account1 with: account2.
-		
-	self assert: (complexPortfolio manages: account1).
-	self assert: (complexPortfolio manages: account2).
-	self deny: (complexPortfolio manages: account3).
-! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/12/2011 13:24'!
-test13PortfolioManagesComposedAccountsAndPortfolios 
-
-	| account1 account2 account3 complexPortfolio composedPortfolio |
-	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	account3 := ReceptiveAccount new.
-	complexPortfolio := Portfolio with: account1 with: account2.
-	composedPortfolio := Portfolio with: complexPortfolio with: account3.
-		
-	self assert: (composedPortfolio manages: account1).
-	self assert: (composedPortfolio manages: account2).
-	self assert: (composedPortfolio manages: account3).
-	self assert: (composedPortfolio manages: complexPortfolio).
-! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/12/2011 13:26'!
-test14AccountKnowsItsTransactions 
-
-	| account1 deposit1 |
-	account1 := ReceptiveAccount new.
-	
-	deposit1 := Deposit register: 100 on:account1.
-		
-	self assert: 1=account1 transactions size .
-	self assert: (account1 transactions includes: deposit1).
-! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/18/2011 17:27'!
-test15PortfolioTransactionsIsTheUnionOftsAccountsTransactions 
-
-	| account1 account2 account3 complexPortfolio account composedPortfolio deposit1 deposit2 deposit3 |
-	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	account3 := ReceptiveAccount new.
-	complexPortfolio := Portfolio with: account1 with: account2.
-	composedPortfolio := Portfolio with: complexPortfolio with: account3.
-		
-	deposit1 := Deposit register: 100 on: account1.
-	deposit2 := Deposit register: 200 on: account2.
-	deposit3 := Deposit register: 300 on: account3.
-		
-	self assert: 3 = composedPortfolio transactions size .
-	self assert: (composedPortfolio transactions includes: deposit1).
-	self assert: (composedPortfolio transactions includes: deposit2).
-	self assert: (composedPortfolio transactions includes: deposit3).
-! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/12/2011 13:23'!
-test16PortfolioKnowsItsAccountsTransactions 
-
-	| account1 account2 account3 complexPortfolio composedPortfolio deposit1 |
-	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	account3 := ReceptiveAccount new.
-	complexPortfolio := Portfolio with: account1 with: account2.
-	composedPortfolio := Portfolio with: complexPortfolio with: account3.
-		
-	deposit1 := Deposit register: 100 on: account1.
-		
-	self assert: 1= (composedPortfolio transactionsOf:account1) size .
-	self assert: ((composedPortfolio transactionsOf: account1) includes:deposit1).! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/12/2011 13:23'!
-test17PortfolioKnowsItsPortfoliosTransactions 
-
-	| account1 account2 account3 complexPortfolio composedPortfolio deposit1 deposit2 |
-	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	account3 := ReceptiveAccount new.
-	complexPortfolio := Portfolio with: account1 with: account2.
-	composedPortfolio := Portfolio with: complexPortfolio with: account3.
-		
-	deposit1 := Deposit register: 100 on: account1.
-	deposit2 := Deposit register: 100 on: account2.
-	Deposit register: 100 on: account3.
-		
-	self assert: 2 = (composedPortfolio transactionsOf:complexPortfolio) size .
-	self assert: ((composedPortfolio transactionsOf:complexPortfolio) includes:deposit1).
-	self assert: ((composedPortfolio transactionsOf:complexPortfolio) includes:deposit2).
-! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/18/2011 17:27'!
-test18PortfolioCanNotAnswerTransactionsOfNotManagedAccounts 
-
-	| account1 account2 account3 complexPortfolio |
-	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	account3 := ReceptiveAccount new.
-	complexPortfolio := Portfolio with: account1 with: account2.
-		
-	self 
-		should: [ complexPortfolio transactionsOf: account3 ] 
-		raise: Error 
-		withExceptionDo: [ :accountNotManaged |
-			self assert: Portfolio accountNotManagedMessageDescription = accountNotManaged messageText ]
-! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/18/2011 17:27'!
-test19CanNotCreatePortfoliosWithRepeatedAccount 
-
-	| account1 |
-	
-	account1 := ReceptiveAccount new.
-	self 
-		should: [ Portfolio with: account1 with: account1 ]
-		raise: Error
-		withExceptionDo: [ :invalidPortfolio |
-			self assert: Portfolio accountAlreadyManagedErrorMessage  = invalidPortfolio messageText ]! !
-
-!PortfolioTest methodsFor: 'tests' stamp: 'HernanWilkinson 9/12/2011 13:24'!
-test20CanNotCreatePortfoliosWithAccountsManagedByOtherManagedPortfolio 
-
-	| account1 account2 complexPortfolio |
-	
-	account1 := ReceptiveAccount new.
-	account2 := ReceptiveAccount new.
-	complexPortfolio := Portfolio with: account1 with: account2.
-
-	self 
-		should: [ Portfolio with: complexPortfolio with: account1 ]
-		raise: Error
-		withExceptionDo: [ :invalidPortfolio |
-			self assert: Portfolio accountAlreadyManagedErrorMessage = invalidPortfolio messageText ]! !
-
-
-!classDefinition: #AccountTransaction category: #'Portfolio-Ejercicio'!
-Object subclass: #AccountTransaction
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Portfolio-Ejercicio'!
-
-!AccountTransaction methodsFor: 'value' stamp: 'HernanWilkinson 9/12/2011 12:25'!
-value 
-
-	self subclassResponsibility ! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'AccountTransaction class' category: #'Portfolio-Ejercicio'!
-AccountTransaction class
-	instanceVariableNames: ''!
-
-!AccountTransaction class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:38'!
-register: aValue on: account
-
-	| withdraw |
-	
-	withdraw := self for: aValue.
-	account register: withdraw.
-		
-	^ withdraw! !
-
-
-!classDefinition: #Deposit category: #'Portfolio-Ejercicio'!
-AccountTransaction subclass: #Deposit
-	instanceVariableNames: 'value'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Portfolio-Ejercicio'!
-
-!Deposit methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:45'!
-initializeFor: aValue
-
-	value := aValue ! !
-
-
-!Deposit methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:38'!
-value
-
-	^ value! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'Deposit class' category: #'Portfolio-Ejercicio'!
-Deposit class
-	instanceVariableNames: ''!
-
-!Deposit class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:38'!
-for: aValue
-
-	^ self new initializeFor: aValue ! !
-
-
-!classDefinition: #Withdraw category: #'Portfolio-Ejercicio'!
-AccountTransaction subclass: #Withdraw
-	instanceVariableNames: 'value'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Portfolio-Ejercicio'!
-
-!Withdraw methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:46'!
-initializeFor: aValue
-
-	value := aValue ! !
-
-
-!Withdraw methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:33'!
-value
-
-	^ value! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'Withdraw class' category: #'Portfolio-Ejercicio'!
-Withdraw class
-	instanceVariableNames: ''!
-
-!Withdraw class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:33'!
-for: aValue
-
-	^ self new initializeFor: aValue ! !
-
-
-!classDefinition: #SummarizingAccount category: #'Portfolio-Ejercicio'!
-Object subclass: #SummarizingAccount
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Portfolio-Ejercicio'!
-
-!SummarizingAccount methodsFor: 'testing' stamp: 'HernanWilkinson 7/13/2011 18:34'!
-manages: anAccount
-
-	self subclassResponsibility ! !
-
-!SummarizingAccount methodsFor: 'testing' stamp: 'HernanWilkinson 7/13/2011 18:34'!
-registers: aTransaction
-
-	self subclassResponsibility ! !
-
-
-!SummarizingAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:35'!
-transactions
-
-	self subclassResponsibility ! !
-
-
-!SummarizingAccount methodsFor: 'balance' stamp: 'HernanWilkinson 7/13/2011 18:34'!
-balance
-
-	self subclassResponsibility ! !
-
-
-!classDefinition: #Portfolio category: #'Portfolio-Ejercicio'!
-SummarizingAccount subclass: #Portfolio
-	instanceVariableNames: ''
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Portfolio-Ejercicio'!
-
-!Portfolio methodsFor: 'balance' stamp: 'HernanWilkinson 7/13/2011 18:39'!
-balance
-
-	self shouldBeImplemented ! !
-
-
-!Portfolio methodsFor: 'testing' stamp: 'HernanWilkinson 7/13/2011 18:39'!
-manages: anAccount
-
-		self shouldBeImplemented 
-! !
-
-!Portfolio methodsFor: 'testing' stamp: 'HernanWilkinson 7/13/2011 18:39'!
-registers: aTtransaction
-
-	self shouldBeImplemented ! !
-
-
-!Portfolio methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:39'!
-transactions 
-
-	self shouldBeImplemented ! !
-
-!Portfolio methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:40'!
-transactionsOf: anAccount 
-
-	self shouldBeImplemented ! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'Portfolio class' category: #'Portfolio-Ejercicio'!
-Portfolio class
-	instanceVariableNames: ''!
-
-!Portfolio class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:41'!
-with: anAccount1 with: anAccount2
-
-	self shouldBeImplemented ! !
-
-!Portfolio class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:41'!
-withAll: aCollectionOfAccounts
-
-	self shouldBeImplemented ! !
-
-
-!classDefinition: #ReceptiveAccount category: #'Portfolio-Ejercicio'!
-SummarizingAccount subclass: #ReceptiveAccount
-	instanceVariableNames: 'transactions'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'Portfolio-Ejercicio'!
-
-!ReceptiveAccount methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:35'!
-initialize
-
-	super initialize.
-	transactions := OrderedCollection new.! !
-
-
-!ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:37'!
-register: aTransaction
-
-	transactions add: aTransaction 
-! !
-
-!ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:37'!
-transactions 
-
-	^ transactions copy! !
-
-
-!ReceptiveAccount methodsFor: 'balance' stamp: 'HernanWilkinson 7/13/2011 18:36'!
-balance
-
-	^ transactions inject: 0 into: [ :balance :transaction | balance + transaction value ]
-! !
-
-
-!ReceptiveAccount methodsFor: 'testing' stamp: 'HernanWilkinson 7/13/2011 18:37'!
-manages: anAccount
-
-	^ self = anAccount 
-! !
-
-!ReceptiveAccount methodsFor: 'testing' stamp: 'HernanWilkinson 7/13/2011 18:37'!
-registers: aTtransaction
-
-	^ transactions includes: aTtransaction 
-! !
+Object subclass: #AccountTransaction	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Portfolio-Ejercicio'!!AccountTransaction methodsFor: 'value'!value	self subclassResponsibility! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!AccountTransaction class	instanceVariableNames: ''!!AccountTransaction class methodsFor: 'instance creation'!register: arg1 on: arg2	| tmp1 |	tmp1 := self for: arg1.	arg2 register: tmp1.	^ tmp1! !AccountTransaction subclass: #Deposit	instanceVariableNames: 'value'	classVariableNames: ''	poolDictionaries: ''	category: 'Portfolio-Ejercicio'!!Deposit methodsFor: 'initialization'!initializeFor: arg1	value := arg1! !!Deposit methodsFor: 'value'!value	^ value! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Deposit class	instanceVariableNames: ''!!Deposit class methodsFor: 'instance creation'!for: arg1	^ self new initializeFor: arg1! !TestCase subclass: #PortfolioTest	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Portfolio-Ejercicio'!!PortfolioTest methodsFor: 'tests'!test08PortfolioKnowsTransactionsRegisteredByItsManagedAccounts	| tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 tmp7 tmp8 |	tmp1 := ReceptiveAccount new.	tmp2 := ReceptiveAccount new.	tmp3 := ReceptiveAccount new.	tmp4 := Portfolio with: tmp1 with: tmp2.	tmp5 := Portfolio with: tmp4 with: tmp3.	tmp6 := Deposit register: 100 on: tmp1.	tmp7 := Deposit register: 200 on: tmp2.	tmp8 := Deposit register: 300 on: tmp3.	self		assert: (tmp5 registers: tmp6);		assert: (tmp5 registers: tmp7);		assert: (tmp5 registers: tmp8)! !!PortfolioTest methodsFor: 'tests'!test11ReceptiveAccountDoNotManageOtherAccount	| tmp1 tmp2 |	tmp1 := ReceptiveAccount new.	tmp2 := ReceptiveAccount new.	self deny: (tmp1 manages: tmp2)! !!PortfolioTest methodsFor: 'tests'!test19CanNotCreatePortfoliosWithRepeatedAccount	| tmp1 |	tmp1 := ReceptiveAccount new.	self		should: [ Portfolio with: tmp1 with: tmp1 ]		raise: Error		withExceptionDo: [ :arg1 | 			self				assert: Portfolio accountAlreadyManagedErrorMessage = arg1 messageText ]! !!PortfolioTest methodsFor: 'tests'!test12PortfolioManagesComposedAccounts	| tmp1 tmp2 tmp3 tmp4 |	tmp1 := ReceptiveAccount new.	tmp2 := ReceptiveAccount new.	tmp3 := ReceptiveAccount new.	tmp4 := Portfolio with: tmp1 with: tmp2.	self		assert: (tmp4 manages: tmp1);		assert: (tmp4 manages: tmp2);		deny: (tmp4 manages: tmp3)! !!PortfolioTest methodsFor: 'tests'!test20CanNotCreatePortfoliosWithAccountsManagedByOtherManagedPortfolio	| tmp1 tmp2 tmp3 |	tmp1 := ReceptiveAccount new.	tmp2 := ReceptiveAccount new.	tmp3 := Portfolio with: tmp1 with: tmp2.	self		should: [ Portfolio with: tmp3 with: tmp1 ]		raise: Error		withExceptionDo: [ :arg1 | 			self				assert: Portfolio accountAlreadyManagedErrorMessage = arg1 messageText ]! !!PortfolioTest methodsFor: 'tests'!test16PortfolioKnowsItsAccountsTransactions	| tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 |	tmp1 := ReceptiveAccount new.	tmp2 := ReceptiveAccount new.	tmp3 := ReceptiveAccount new.	tmp4 := Portfolio with: tmp1 with: tmp2.	tmp5 := Portfolio with: tmp4 with: tmp3.	tmp6 := Deposit register: 100 on: tmp1.	self		assert: 1 = (tmp5 transactionsOf: tmp1) size;		assert: ((tmp5 transactionsOf: tmp1) includes: tmp6)! !!PortfolioTest methodsFor: 'tests'!test18PortfolioCanNotAnswerTransactionsOfNotManagedAccounts	| tmp1 tmp2 tmp3 tmp4 |	tmp1 := ReceptiveAccount new.	tmp2 := ReceptiveAccount new.	tmp3 := ReceptiveAccount new.	tmp4 := Portfolio with: tmp1 with: tmp2.	self		should: [ tmp4 transactionsOf: tmp3 ]		raise: Error		withExceptionDo: [ :arg1 | 			self				assert: Portfolio accountNotManagedMessageDescription = arg1 messageText ]! !!PortfolioTest methodsFor: 'tests'!test14AccountKnowsItsTransactions	| tmp1 tmp2 |	tmp1 := ReceptiveAccount new.	tmp2 := Deposit register: 100 on: tmp1.	self		assert: 1 = tmp1 transactions size;		assert: (tmp1 transactions includes: tmp2)! !!PortfolioTest methodsFor: 'tests'!test02DepositIncreasesBalanceOnTransactionValue	| tmp1 |	tmp1 := ReceptiveAccount new.	Deposit register: 100 on: tmp1.	self assert: 100 = tmp1 balance! !!PortfolioTest methodsFor: 'tests'!test17PortfolioKnowsItsPortfoliosTransactions	| tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 tmp7 |	tmp1 := ReceptiveAccount new.	tmp2 := ReceptiveAccount new.	tmp3 := ReceptiveAccount new.	tmp4 := Portfolio with: tmp1 with: tmp2.	tmp5 := Portfolio with: tmp4 with: tmp3.	tmp6 := Deposit register: 100 on: tmp1.	tmp7 := Deposit register: 100 on: tmp2.	Deposit register: 100 on: tmp3.	self		assert: 2 = (tmp5 transactionsOf: tmp4) size;		assert: ((tmp5 transactionsOf: tmp4) includes: tmp6);		assert: ((tmp5 transactionsOf: tmp4) includes: tmp7)! !!PortfolioTest methodsFor: 'tests'!test03WithdrawDecreasesBalanceOnTransactionValue	| tmp1 |	tmp1 := ReceptiveAccount new.	Deposit register: 100 on: tmp1.	Withdraw register: -50 on: tmp1.	self assert: 50 = tmp1 balance! !!PortfolioTest methodsFor: 'tests'!test01ReceptiveAccountHaveZeroAsBalanceWhenCreated	| tmp1 |	tmp1 := ReceptiveAccount new.	self assert: 0 = tmp1 balance! !!PortfolioTest methodsFor: 'tests'!test10ReceptiveAccountManageItSelf	| tmp1 |	tmp1 := ReceptiveAccount new.	self assert: (tmp1 manages: tmp1)! !!PortfolioTest methodsFor: 'tests'!test15PortfolioTransactionsIsTheUnionOftsAccountsTransactions	| tmp1 tmp2 tmp3 tmp4 tmp5 tmp6 tmp7 tmp8 tmp9 |	tmp1 := ReceptiveAccount new.	tmp2 := ReceptiveAccount new.	tmp3 := ReceptiveAccount new.	tmp4 := Portfolio with: tmp1 with: tmp2.	tmp5 := Portfolio with: tmp4 with: tmp3.	tmp6 := Deposit register: 100 on: tmp1.	tmp7 := Deposit register: 200 on: tmp2.	tmp8 := Deposit register: 300 on: tmp3.	self		assert: 3 = tmp5 transactions size;		assert: (tmp5 transactions includes: tmp6);		assert: (tmp5 transactions includes: tmp7);		assert: (tmp5 transactions includes: tmp8)! !!PortfolioTest methodsFor: 'tests'!test05PortfolioCanManagePortfolios	| tmp1 tmp2 tmp3 tmp4 tmp5 |	tmp1 := ReceptiveAccount new.	tmp2 := ReceptiveAccount new.	tmp3 := ReceptiveAccount new.	tmp4 := Portfolio with: tmp1 with: tmp2.	tmp5 := Portfolio with: tmp4 with: tmp3.	Deposit		register: 100 on: tmp1;		register: 200 on: tmp2;		register: 300 on: tmp3.	self assert: 600 = tmp5 balance! !!PortfolioTest methodsFor: 'tests'!test06ReceptiveAccountKnowsRegisteredTransactions	| tmp1 tmp2 tmp3 |	tmp1 := ReceptiveAccount new.	tmp2 := Deposit register: 100 on: tmp1.	tmp3 := Withdraw register: -50 on: tmp1.	self		assert: (tmp1 registers: tmp2);		assert: (tmp1 registers: tmp3)! !!PortfolioTest methodsFor: 'tests'!test04PortfolioBalanceIsSumOfManagedAccountsBalance	| tmp1 tmp2 tmp3 |	tmp1 := ReceptiveAccount new.	tmp2 := ReceptiveAccount new.	tmp3 := Portfolio with: tmp1 with: tmp2.	Deposit		register: 100 on: tmp1;		register: 200 on: tmp2.	self assert: 300 = tmp3 balance! !!PortfolioTest methodsFor: 'tests'!test07ReceptiveAccountDoNotKnowNotRegisteredTransactions	| tmp1 tmp2 tmp3 |	tmp1 := ReceptiveAccount new.	tmp2 := Deposit for: 100.	tmp3 := Withdraw for: -50.	self		deny: (tmp1 registers: tmp2);		deny: (tmp1 registers: tmp3)! !!PortfolioTest methodsFor: 'tests'!test13PortfolioManagesComposedAccountsAndPortfolios	| tmp1 tmp2 tmp3 tmp4 tmp5 |	tmp1 := ReceptiveAccount new.	tmp2 := ReceptiveAccount new.	tmp3 := ReceptiveAccount new.	tmp4 := Portfolio with: tmp1 with: tmp2.	tmp5 := Portfolio with: tmp4 with: tmp3.	self		assert: (tmp5 manages: tmp1);		assert: (tmp5 manages: tmp2);		assert: (tmp5 manages: tmp3);		assert: (tmp5 manages: tmp4)! !Object subclass: #SummarizingAccount	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'Portfolio-Ejercicio'!!SummarizingAccount methodsFor: 'balance'!balance	self subclassResponsibility! !!SummarizingAccount methodsFor: 'testing'!registers: arg1	self subclassResponsibility! !!SummarizingAccount methodsFor: 'testing'!manages: arg1	self subclassResponsibility! !!SummarizingAccount methodsFor: 'transactions'!transactions	self subclassResponsibility! !SummarizingAccount subclass: #Portfolio	instanceVariableNames: 'accounts'	classVariableNames: ''	poolDictionaries: ''	category: 'Portfolio-Ejercicio'!!Portfolio methodsFor: 'testing'!registers: arg1	| tmp2 |	tmp2 := false.	accounts do: [ :arg2 | tmp2 := tmp2 or: (arg2 registers: arg1) ].	^ tmp2! !!Portfolio methodsFor: 'testing'!manages: arg1	accounts		do: [ :arg2 | 			(arg2 manages: arg1)				ifTrue: [ ^ true ] ].	self = arg1		ifTrue: [ ^ true ].	^ false! !!Portfolio methodsFor: 'balance'!balance	| tmp2 |	tmp2 := 0.	accounts do: [ :arg1 | tmp2 := tmp2 + arg1 balance ].	^ tmp2! !!Portfolio methodsFor: 'balance'!addAccounts: arg1	accounts := arg1! !!Portfolio methodsFor: 'transactions'!transactionsOf: arg1	self shouldBeImplemented! !!Portfolio methodsFor: 'transactions'!transactions	| tmp1 |	tmp1 := LinkedList new.	accounts do: [ :arg1 | tmp1 addAll: arg1 transactions ].	^ tmp1! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Portfolio class	instanceVariableNames: 'account1 account2'!!Portfolio class methodsFor: 'instance creation'!with: arg1 with: arg2	| tmp1 |	tmp1 := LinkedList new.	tmp1		add: arg1;		add: arg2.	^ self new addAccounts: tmp1! !!Portfolio class methodsFor: 'instance creation'!withAll: arg1	self shouldBeImplemented! !SummarizingAccount subclass: #ReceptiveAccount	instanceVariableNames: 'transactions'	classVariableNames: ''	poolDictionaries: ''	category: 'Portfolio-Ejercicio'!!ReceptiveAccount methodsFor: 'initialization'!initialize	super initialize.	transactions := OrderedCollection new! !!ReceptiveAccount methodsFor: 'transactions'!transactions	^ transactions copy! !!ReceptiveAccount methodsFor: 'transactions'!register: arg1	transactions add: arg1! !!ReceptiveAccount methodsFor: 'balance'!balance	^ transactions inject: 0 into: [ :arg1 :arg2 | arg1 + arg2 value ]! !!ReceptiveAccount methodsFor: 'testing'!registers: arg1	^ transactions includes: arg1! !!ReceptiveAccount methodsFor: 'testing'!manages: arg1	^ self = arg1! !AccountTransaction subclass: #Withdraw	instanceVariableNames: 'value'	classVariableNames: ''	poolDictionaries: ''	category: 'Portfolio-Ejercicio'!!Withdraw methodsFor: 'initialization'!initializeFor: arg1	value := arg1! !!Withdraw methodsFor: 'value'!value	^ value! !"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!Withdraw class	instanceVariableNames: ''!!Withdraw class methodsFor: 'instance creation'!for: arg1	^ self new initializeFor: arg1! !
