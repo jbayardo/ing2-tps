@@ -448,7 +448,7 @@ accounts
 
 !Portfolio methodsFor: 'private' stamp: 'JB 9/22/2017 18:58:01'!
 addAccounts: aCollectionOfAccounts
-	accounts = nil ifTrue: [ accounts _ Set new ].
+	accounts = nil ifTrue: [ accounts := Set new ].
 	aCollectionOfAccounts do: [ :anAccount |
 		(self manages: anAccount)
 			ifTrue: [ self error: Portfolio accountAlreadyManagedErrorMessage ]
