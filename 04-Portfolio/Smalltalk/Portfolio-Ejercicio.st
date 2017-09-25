@@ -408,18 +408,20 @@ SummarizingAccount subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!Portfolio methodsFor: 'balance' stamp: 'JB 9/22/2017 19:01:38'!
+!Portfolio methodsFor: 'balance' stamp: 'JB 9/25/2017 16:18:30'!
 balance
-	^ accounts
+	" Esto tenemos que hacerlo de esta forma porque si utilizamos los mensajes collect y sum hay un error que no logramos comprender por qué se genera "
+	^ self accounts
 		inject: 0
 		into: [ :aPartialBalance :aManagedAccount |
 			aPartialBalance + aManagedAccount balance ].! !
 
 
-!Portfolio methodsFor: 'testing' stamp: 'JB 9/22/2017 19:01:17'!
+!Portfolio methodsFor: 'testing' stamp: 'JB 9/25/2017 16:16:57'!
 manages: anAccount
-	^ self accounts anySatisfy: [ :aManagedAccount |
-		(aManagedAccount = anAccount) or: (aManagedAccount manages: anAccount)].! !
+	" El Portfolio se maneja a sí mismo, pero no podemos tenerlo en la lista de cuentas porque usamos object recursion y esto nos haría tener un loop infinito. "
+	^ (anAccount = self) or: (self accounts anySatisfy: [ :aManagedAccount |
+		(aManagedAccount = anAccount) or: (aManagedAccount manages: anAccount)]).! !
 
 !Portfolio methodsFor: 'testing' stamp: 'JB 9/22/2017 19:00:59'!
 registers: aTransaction
@@ -427,18 +429,20 @@ registers: aTransaction
 		aManagedAccount registers: aTransaction ].! !
 
 
-!Portfolio methodsFor: 'transactions' stamp: 'JB 9/22/2017 19:02:17'!
+!Portfolio methodsFor: 'transactions' stamp: 'JB 9/25/2017 15:56:28'!
 transactions
 	^ self accounts
 		inject: OrderedCollection new
 		into: [ :partialSetOfTransactions :aManagedAccount |
+			" Los mensajes `transactions` responden copias de las transacciones "
 			partialSetOfTransactions addAllLast: aManagedAccount transactions.
 			partialSetOfTransactions ].! !
 
-!Portfolio methodsFor: 'transactions' stamp: 'JB 9/22/2017 18:59:57'!
+!Portfolio methodsFor: 'transactions' stamp: 'JB 9/25/2017 16:19:46'!
 transactionsOf: anAccount
 	(self manages: anAccount)
 		ifFalse: [^ self error: (Portfolio accountNotManagedMessageDescription)].
+	" Si manejamos una cuenta, las transacciones de esa cuenta que reportamos son exactamente las que tiene la cuenta. "
 	^ anAccount transactions.! !
 
 
@@ -446,14 +450,20 @@ transactionsOf: anAccount
 accounts
 	^ accounts.! !
 
-!Portfolio methodsFor: 'private' stamp: 'JB 9/22/2017 18:58:01'!
-addAccounts: aCollectionOfAccounts
-	accounts = nil ifTrue: [ accounts := Set new ].
+!Portfolio methodsFor: 'private' stamp: 'JB 9/25/2017 16:22:05'!
+addManagedAccount: anAccount
+	(self manages: anAccount)
+		ifTrue: [ self error: Portfolio accountAlreadyManagedErrorMessage ].
+	self accounts add: anAccount.! !
+
+!Portfolio methodsFor: 'private' stamp: 'JB 9/25/2017 16:03:18'!
+addManagedAccounts: aCollectionOfAccounts
 	aCollectionOfAccounts do: [ :anAccount |
-		(self manages: anAccount)
-			ifTrue: [ self error: Portfolio accountAlreadyManagedErrorMessage ]
-			ifFalse: [ accounts add: anAccount ]].
-	^ self.! !
+		self addManagedAccount: anAccount ].! !
+
+!Portfolio methodsFor: 'private' stamp: 'JB 9/25/2017 16:21:54'!
+initialize
+	accounts := Set new.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -461,13 +471,18 @@ addAccounts: aCollectionOfAccounts
 Portfolio class
 	instanceVariableNames: ''!
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'JB 9/22/2017 18:58:34'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'JB 9/25/2017 16:26:46'!
 with: anAccount1 with: anAccount2
 	| aCollectionOfAccounts |
+	" Utilizamos una OrderedCollection porque si usabamos un Set (que es lo que nos parece semánticamente más correcto) los tests que ponen cuentas duplicadas no pasan porque deduplicamos antes de lo esperado. "
 	aCollectionOfAccounts := OrderedCollection new.
 	aCollectionOfAccounts add: anAccount1 .
 	aCollectionOfAccounts add: anAccount2 .
-	^ self new addAccounts: aCollectionOfAccounts .! !
+	^ self withAll: aCollectionOfAccounts.! !
+
+!Portfolio class methodsFor: 'instance creation' stamp: 'JB 9/25/2017 16:21:06'!
+withAll: aCollectionOfAccounts
+	^ self new initialize addManagedAccounts: aCollectionOfAccounts.! !
 
 
 !Portfolio class methodsFor: 'error handling' stamp: 'JB 9/22/2017 18:53:14'!
