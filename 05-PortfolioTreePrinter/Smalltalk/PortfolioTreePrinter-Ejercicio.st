@@ -471,32 +471,24 @@ accountTransferNetOf: aReceptiveAccount
 	negative := (aReceptiveAccount transactions select: [:transact | transact class = TransferWithdraw]) sum: [:trans | trans value] .
 	^ positive - negative .! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'Damian Fuman 9/27/2017 12:35:29'!
+!PortfolioTest methodsFor: 'test support' stamp: 'Damian Fuman 9/27/2017 18:59:25'!
 investmentEarningsOf: aReceptiveAccount 
 	
-	^ (aReceptiveAccount transactions select: [:transact | transact class = CertificateOfDeposit]) sum: [:investment | investment value * ((investment tna / 360) * investment numberOfDays) ].! !
+	^ (AccountInvestmentPrinter new initialize: aReceptiveAccount) earnings.! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'Damian Fuman 9/27/2017 12:10:36'!
+!PortfolioTest methodsFor: 'test support' stamp: 'Damian Fuman 9/27/2017 19:00:44'!
 investmentNetOf: aReceptiveAccount 
 	
-	 ^ (aReceptiveAccount transactions select: [:transact | transact class = CertificateOfDeposit]) sum: [:trans | trans value].! !
+	^ (AccountInvestmentPrinter new initialize: aReceptiveAccount) totalInvestments.! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'Damian Fuman 9/27/2017 13:46:03'!
+!PortfolioTest methodsFor: 'test support' stamp: 'Damian Fuman 9/27/2017 19:20:43'!
 portofolioTreeOf: aPortfolio namingAccountWith: aDictionary 
-	^ self portofolioTreeOfAux: aPortfolio namingAccountWith: aDictionary order: ''.! !
+	^ (PortfolioTreePrinter new initialize: aPortfolio with: aDictionary) portfolioTreeOf: aPortfolio order: '' .! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'Damian Fuman 9/27/2017 13:39:30'!
-portofolioTreeOfAux: aPortfolio namingAccountWith: aDictionary order: anOrder
-	| ans |
-	ans := OrderedCollection new .
-	ans add: anOrder, (aDictionary at: aPortfolio) .
-	(aPortfolio accounts) do: [:account | ans addAll: (self portofolioTreeOfAux: account namingAccountWith: aDictionary order: anOrder,' ')] .
-	^ ans .! !
-
-!PortfolioTest methodsFor: 'test support' stamp: 'Damian Fuman 9/27/2017 13:49:18'!
+!PortfolioTest methodsFor: 'test support' stamp: 'Damian Fuman 9/27/2017 19:21:04'!
 reversePortofolioTreeOf: aPortfolio namingAccountWith: aDictionary 
 	
-	^ self reversePortofolioTreeOfAux: aPortfolio namingAccountWith: aDictionary order: ''.! !
+	^ (PortfolioTreePrinter new initialize: aPortfolio with: aDictionary) reversePortfolioTreeOf: aPortfolio order: '' .! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'Damian Fuman 9/27/2017 13:52:44'!
 reversePortofolioTreeOfAux: aPortfolio namingAccountWith: aDictionary order: anOrder
@@ -505,6 +497,42 @@ reversePortofolioTreeOfAux: aPortfolio namingAccountWith: aDictionary order: anO
 	(aPortfolio accounts) reverseDo: [:account | ans addAll: (self reversePortofolioTreeOfAux: account namingAccountWith: aDictionary order: anOrder,' ')] .
 	ans add: anOrder, (aDictionary at: aPortfolio) .
 	^ ans .! !
+
+
+!classDefinition: #AccountInvestmentPrinter category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #AccountInvestmentPrinter
+	instanceVariableNames: 'account'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!AccountInvestmentPrinter methodsFor: 'as yet unclassified' stamp: 'Damian Fuman 9/27/2017 18:57:20'!
+account
+	^account.! !
+
+!AccountInvestmentPrinter methodsFor: 'as yet unclassified' stamp: 'Damian Fuman 9/27/2017 18:58:58'!
+earnings
+
+	^ (self account transactions select: [:transact | transact class = CertificateOfDeposit]) sum: [:investment | investment value * ((investment tna / 360) * investment numberOfDays) ].! !
+
+!AccountInvestmentPrinter methodsFor: 'as yet unclassified' stamp: 'Damian Fuman 9/27/2017 18:53:12'!
+initialize: anAccount
+	account := anAccount.! !
+
+!AccountInvestmentPrinter methodsFor: 'as yet unclassified' stamp: 'Damian Fuman 9/27/2017 19:00:14'!
+totalInvestments
+
+	^ (self account transactions select: [:transact | transact class = CertificateOfDeposit]) sum: [:trans | trans value].! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'AccountInvestmentPrinter class' category: #'PortfolioTreePrinter-Ejercicio'!
+AccountInvestmentPrinter class
+	instanceVariableNames: ''!
+
+!AccountInvestmentPrinter class methodsFor: 'as yet unclassified' stamp: 'Damian Fuman 9/27/2017 18:52:38'!
+for: anAccount
+	^ self new initialize: anAccount.! !
 
 
 !classDefinition: #AccountSummaryPrinter category: #'PortfolioTreePrinter-Ejercicio'!
@@ -548,9 +576,10 @@ Object subclass: #AccountTransaction
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!AccountTransaction methodsFor: 'evaluating' stamp: 'JB 9/25/2017 21:46:27'!
-accountSummaryLineFromPerspective: anAccount
-	self subclassResponsibility.! !
+!AccountTransaction methodsFor: 'evaluating' stamp: 'Damian Fuman 9/27/2017 19:01:40'!
+accountSummaryLine
+
+	self subclassResponsibility ! !
 
 !AccountTransaction methodsFor: 'evaluating' stamp: 'JB 9/25/2017 20:53:59'!
 netValueFor: anAccount
@@ -824,6 +853,43 @@ register: aValue on: account
 	account register: withdraw.
 		
 	^ withdraw! !
+
+
+!classDefinition: #PortfolioTreePrinter category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #PortfolioTreePrinter
+	instanceVariableNames: 'portfolio dictionary'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!PortfolioTreePrinter methodsFor: 'as yet unclassified' stamp: 'Damian Fuman 9/27/2017 19:10:46'!
+dictionary
+^dictionary.! !
+
+!PortfolioTreePrinter methodsFor: 'as yet unclassified' stamp: 'Damian Fuman 9/27/2017 19:04:27'!
+initialize: aPortfolio with: aDictionary
+	portfolio := aPortfolio.
+	dictionary := aDictionary.! !
+
+!PortfolioTreePrinter methodsFor: 'as yet unclassified' stamp: 'Damian Fuman 9/27/2017 19:10:42'!
+portfolio
+^portfolio.! !
+
+!PortfolioTreePrinter methodsFor: 'as yet unclassified' stamp: 'Damian Fuman 9/27/2017 19:23:07'!
+portfolioTreeOf: anAccount order: anOrder
+	| ans |
+	ans := OrderedCollection new .
+	ans add: anOrder, (self dictionary at: anAccount) .
+	(anAccount accounts) do: [:account | ans addAll: (self portfolioTreeOf: account order: anOrder,' ')] .
+	^ ans .! !
+
+!PortfolioTreePrinter methodsFor: 'as yet unclassified' stamp: 'Damian Fuman 9/27/2017 19:24:48'!
+reversePortfolioTreeOf: anAccount order: anOrder
+	| ans |
+	ans := OrderedCollection new .
+	(anAccount accounts) reverseDo: [:account | ans addAll: (self reversePortfolioTreeOf: account order: anOrder,' ')] .
+	ans add: anOrder, (self dictionary at: anAccount) .
+	^ ans .! !
 
 
 !classDefinition: #SummarizingAccount category: #'PortfolioTreePrinter-Ejercicio'!
