@@ -493,9 +493,9 @@ test29ReversePortfolioTreePrinterPrintsTheCompositeStartingFromTheLeaves
 	! !
 
 
-!PortfolioTest methodsFor: 'test support' stamp: 'JB 9/28/2017 10:31:32'!
+!PortfolioTest methodsFor: 'test support' stamp: 'JB 9/28/2017 13:44:59'!
 accountSummaryLinesOf: aReceptiveAccount
-	^ (AccountPrinter for: aReceptiveAccount) textSummary.! !
+	^ (AccountSummaryPrinter for: aReceptiveAccount) summary.! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'Damian Fuman 9/28/2017 11:35:32'!
 accountTransferNetOf: aReceptiveAccount
@@ -525,6 +525,62 @@ reversePortofolioTreeOf: aPortfolio namingAccountWith: aDictionaryOfNames
 		withNames: aDictionaryOfNames) reversePortfolioTree.! !
 
 
+!classDefinition: #AccountBalanceCalculator category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #AccountBalanceCalculator
+	instanceVariableNames: 'account'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!AccountBalanceCalculator methodsFor: 'initialization' stamp: 'JB 9/28/2017 13:32:54'!
+initializeFor: anAccount
+	account := anAccount.
+	! !
+
+
+!AccountBalanceCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:32:54'!
+account
+
+	^ account .! !
+
+!AccountBalanceCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:46:33'!
+balance
+	^ self account transactions
+		inject: 0
+		into: [ :partialBalance :aTransaction |
+			partialBalance + (aTransaction dispatchByTransactionKind: self) ].! !
+
+!AccountBalanceCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:41:57'!
+processCertificateOfDeposit: anAccountTransaction
+	^ anAccountTransaction value negated.! !
+
+!AccountBalanceCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:23'!
+processDeposit: anAccountTransaction
+	^ anAccountTransaction value.! !
+
+!AccountBalanceCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:39'!
+processTransferDeposit: anAccountTransaction
+	^ anAccountTransaction value.! !
+
+!AccountBalanceCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:52'!
+processTransferWithdraw: anAccountTransaction
+	^ anAccountTransaction value negated.! !
+
+!AccountBalanceCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:43:05'!
+processWithdraw: anAccountTransaction
+	^ anAccountTransaction value negated.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'AccountBalanceCalculator class' category: #'PortfolioTreePrinter-Ejercicio'!
+AccountBalanceCalculator class
+	instanceVariableNames: ''!
+
+!AccountBalanceCalculator class methodsFor: 'as yet unclassified' stamp: 'JB 9/28/2017 13:32:54'!
+for: aReceptiveAccount
+	^ self new initializeFor: aReceptiveAccount .! !
+
+
 !classDefinition: #AccountInvestmentEarningsCalculator category: #'PortfolioTreePrinter-Ejercicio'!
 Object subclass: #AccountInvestmentEarningsCalculator
 	instanceVariableNames: 'account'
@@ -543,31 +599,30 @@ account
 
 	^ account .! !
 
-!AccountInvestmentEarningsCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 12:06:24'!
-dispatcherCertificateOfDeposit: aCertificateOfDeposit
-	^ aCertificateOfDeposit value * (aCertificateOfDeposit nominalAnnualRate / 360 * aCertificateOfDeposit numberOfDays) .! !
-
-!AccountInvestmentEarningsCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 12:08:11'!
-dispatcherDeposit: aDeposit
-	^ 0 .! !
-
-!AccountInvestmentEarningsCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 12:08:05'!
-dispatcherTransferDeposit: aTransferDeposit
-	^ 0 .! !
-
-!AccountInvestmentEarningsCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 12:07:53'!
-dispatcherTransferWithdraw: aTransferWithdraw
-	^ 0 .! !
-
-!AccountInvestmentEarningsCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 12:07:44'!
-dispatcherWithdraw: aWithdraw
-	^ 0 .! !
-
-!AccountInvestmentEarningsCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 12:07:01'!
+!AccountInvestmentEarningsCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:45:52'!
 investmentEarnings
+	^ self account transactions sum: [ :aTransaction |
+		aTransaction dispatchByTransactionKind: self ].! !
 
-	^ self account transactions sum: [ :trans |
-		trans dispatchByType: self ] .! !
+!AccountInvestmentEarningsCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:41:57'!
+processCertificateOfDeposit: aCertificateOfDeposit
+	^ aCertificateOfDeposit value * (aCertificateOfDeposit nominalAnnualRate / 360 * aCertificateOfDeposit numberOfDays).! !
+
+!AccountInvestmentEarningsCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:23'!
+processDeposit: aDeposit
+	^ 0.! !
+
+!AccountInvestmentEarningsCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:39'!
+processTransferDeposit: aTransferDeposit
+	^ 0.! !
+
+!AccountInvestmentEarningsCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:52'!
+processTransferWithdraw: aTransferWithdraw
+	^ 0.! !
+
+!AccountInvestmentEarningsCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:43:05'!
+processWithdraw: aWithdraw
+	^ 0.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -598,33 +653,30 @@ account
 
 	^ account .! !
 
-!AccountInvestmentNetCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 12:10:09'!
-dispatcherCertificateOfDeposit: aCertificateOfDeposit
-	^ aCertificateOfDeposit value .! !
-
-!AccountInvestmentNetCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 12:10:34'!
-dispatcherDeposit: aDeposit
-	^ 0 .! !
-
-!AccountInvestmentNetCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 12:11:04'!
-dispatcherTransferDeposit: aTransferDeposit
-	^ 0 .! !
-
-!AccountInvestmentNetCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 12:10:52'!
-dispatcherTransferWithdraw: aTransferWithdraw
-	^ 0 .! !
-
-!AccountInvestmentNetCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 12:10:44'!
-dispatcherWithdraw: aWithdraw
-	^ 0 .! !
-
-!AccountInvestmentNetCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 12:11:11'!
+!AccountInvestmentNetCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:45:37'!
 investmentNet
+	^ self account transactions sum: [ :aTransaction |
+		aTransaction dispatchByTransactionKind: self ].! !
 
+!AccountInvestmentNetCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:41:57'!
+processCertificateOfDeposit: aCertificateOfDeposit
+	^ aCertificateOfDeposit value.! !
 
-	^ self account transactions sum: [ :trans |
-		trans dispatchByType: self ] .
-! !
+!AccountInvestmentNetCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:23'!
+processDeposit: aDeposit
+	^ 0.! !
+
+!AccountInvestmentNetCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:39'!
+processTransferDeposit: aTransferDeposit
+	^ 0.! !
+
+!AccountInvestmentNetCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:52'!
+processTransferWithdraw: aTransferWithdraw
+	^ 0.! !
+
+!AccountInvestmentNetCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:43:05'!
+processWithdraw: aWithdraw
+	^ 0.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -637,43 +689,61 @@ for: aReceptiveAccount
 	^ self new initializeFor: aReceptiveAccount .! !
 
 
-!classDefinition: #AccountPrinter category: #'PortfolioTreePrinter-Ejercicio'!
-Object subclass: #AccountPrinter
+!classDefinition: #AccountSummaryPrinter category: #'PortfolioTreePrinter-Ejercicio'!
+Object subclass: #AccountSummaryPrinter
 	instanceVariableNames: 'account'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!AccountPrinter methodsFor: 'initialization' stamp: 'JB 9/27/2017 17:45:32'!
+!AccountSummaryPrinter methodsFor: 'initialization' stamp: 'JB 9/28/2017 13:22:51'!
 initializeFor: anAccount
+	account := anAccount.
+	! !
 
-	account := anAccount .! !
 
-
-!AccountPrinter methodsFor: 'accessing' stamp: 'JB 9/27/2017 17:32:01'!
+!AccountSummaryPrinter methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:29:39'!
 account
 
-	^ account! !
+	^ account .! !
 
+!AccountSummaryPrinter methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:41:57'!
+processCertificateOfDeposit: anAccountTransaction
+	^ 'Plazo fijo por ' , anAccountTransaction value printString , ' durante ' , anAccountTransaction numberOfDays printString , ' dias a una tna de ' , (anAccountTransaction nominalAnnualRate * 100) printString , '%'.! !
 
-!AccountPrinter methodsFor: 'printing' stamp: 'JB 9/28/2017 10:32:09'!
-textSummary
+!AccountSummaryPrinter methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:23'!
+processDeposit: anAccountTransaction
+	^ 'Deposito por ' , anAccountTransaction value printString.! !
+
+!AccountSummaryPrinter methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:39'!
+processTransferDeposit: anAccountTransaction
+	^ 'Transferencia por ' , anAccountTransaction value printString.! !
+
+!AccountSummaryPrinter methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:52'!
+processTransferWithdraw: anAccountTransaction
+	^ 'Transferencia por -' , anAccountTransaction value printString.! !
+
+!AccountSummaryPrinter methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:43:05'!
+processWithdraw: anAccountTransaction
+	^ 'Extraccion por ' , anAccountTransaction value printString.! !
+
+!AccountSummaryPrinter methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:44:59'!
+summary
 	^ self account transactions
 		inject: OrderedCollection new
 		into: [ :aPartialAccountSummary :aTransaction |
-			aPartialAccountSummary addLast: aTransaction textSummary.
+			aPartialAccountSummary addLast: (aTransaction dispatchByTransactionKind: self).
 			aPartialAccountSummary ].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
-!classDefinition: 'AccountPrinter class' category: #'PortfolioTreePrinter-Ejercicio'!
-AccountPrinter class
+!classDefinition: 'AccountSummaryPrinter class' category: #'PortfolioTreePrinter-Ejercicio'!
+AccountSummaryPrinter class
 	instanceVariableNames: ''!
 
-!AccountPrinter class methodsFor: 'as yet unclassified' stamp: 'JB 9/27/2017 17:34:28'!
-for: anAccount
-
-	^ self new initializeFor: anAccount .! !
+!AccountSummaryPrinter class methodsFor: 'as yet unclassified' stamp: 'JB 9/28/2017 13:19:23'!
+for: aReceptiveAccount
+	^ self new initializeFor: aReceptiveAccount .! !
 
 
 !classDefinition: #AccountTransaction category: #'PortfolioTreePrinter-Ejercicio'!
@@ -683,21 +753,11 @@ Object subclass: #AccountTransaction
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!AccountTransaction methodsFor: 'evaluating' stamp: 'JB 9/27/2017 17:20:07'!
-affectBalance: aBalance
-
-	self subclassResponsibility .! !
-
-!AccountTransaction methodsFor: 'evaluating' stamp: 'Damian Fuman 9/28/2017 11:24:26'!
-dispatchByType: anInstance
-
-	self subclassResponsibility .! !
-
-!AccountTransaction methodsFor: 'evaluating' stamp: 'JB 9/28/2017 10:32:09'!
-textSummary
+!AccountTransaction methodsFor: 'evaluating' stamp: 'JB 9/28/2017 13:44:02'!
+dispatchByTransactionKind: anInstance
 	self subclassResponsibility.! !
 
-!AccountTransaction methodsFor: 'evaluating' stamp: 'JB 9/28/2017 10:24:21'!
+!AccountTransaction methodsFor: 'evaluating' stamp: 'JB 9/28/2017 13:44:41'!
 value
 	self subclassResponsibility.! !
 
@@ -723,15 +783,9 @@ AccountTransaction subclass: #CertificateOfDeposit
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!CertificateOfDeposit methodsFor: 'accessing' stamp: 'JB 9/27/2017 17:30:27'!
-affectBalance: aBalance
-
-	^ aBalance - self value .! !
-
-!CertificateOfDeposit methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 11:58:50'!
-dispatchByType: anInstance
-
-	^anInstance dispatcherCertificateOfDeposit: self .! !
+!CertificateOfDeposit methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:44:02'!
+dispatchByTransactionKind: anInstance
+	^ anInstance processCertificateOfDeposit: self.! !
 
 !CertificateOfDeposit methodsFor: 'accessing' stamp: 'JB 9/27/2017 17:32:50'!
 nominalAnnualRate
@@ -754,11 +808,6 @@ initializeFor: anAmount during: aNumberOfDays at: aRate
 	value := anAmount .
 	numberOfDays := aNumberOfDays .
 	nominalAnnualRate := aRate .! !
-
-
-!CertificateOfDeposit methodsFor: 'printing' stamp: 'JB 9/28/2017 10:32:09'!
-textSummary
-	^ 'Plazo fijo por ' , self value printString , ' durante ' , self numberOfDays printString , ' dias a una tna de ' , (self nominalAnnualRate * 100) printString , '%'.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -796,24 +845,13 @@ initializeFor: aValue
 	value := aValue .! !
 
 
-!Deposit methodsFor: 'accessing' stamp: 'JB 9/27/2017 17:35:07'!
-affectBalance: aBalance
-
-	^ aBalance + self value .! !
-
-!Deposit methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 11:59:40'!
-dispatchByType: anInstance
-
-	^anInstance dispatcherDeposit: self .! !
+!Deposit methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:44:02'!
+dispatchByTransactionKind: anInstance
+	^ anInstance processDeposit: self.! !
 
 !Deposit methodsFor: 'accessing' stamp: 'JB 9/28/2017 10:24:21'!
 value
 	^ value.! !
-
-
-!Deposit methodsFor: 'printing' stamp: 'JB 9/28/2017 10:32:09'!
-textSummary
-	^ 'Deposito por ' , self value printString.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -842,15 +880,9 @@ AccountTransaction subclass: #TransferDeposit
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!TransferDeposit methodsFor: 'accessing' stamp: 'JB 9/27/2017 17:23:06'!
-affectBalance: aBalance
-
-	^ aBalance + self value .! !
-
-!TransferDeposit methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 11:58:41'!
-dispatchByType: anInstance
-
-	^anInstance dispatcherTransferDeposit: self .! !
+!TransferDeposit methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:44:02'!
+dispatchByTransactionKind: anInstance
+	^ anInstance processTransferDeposit: self.! !
 
 !TransferDeposit methodsFor: 'accessing' stamp: 'JB 9/27/2017 17:23:33'!
 transfer
@@ -864,11 +896,6 @@ value
 !TransferDeposit methodsFor: 'initialization' stamp: 'JB 9/27/2017 17:22:42'!
 initializeFor: aTransfer
 	transfer := aTransfer.! !
-
-
-!TransferDeposit methodsFor: 'printing' stamp: 'JB 9/28/2017 10:32:09'!
-textSummary
-	^ 'Transferencia por ' , self value printString.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -898,15 +925,9 @@ AccountTransaction subclass: #TransferWithdraw
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!TransferWithdraw methodsFor: 'accessing' stamp: 'JB 9/27/2017 17:24:41'!
-affectBalance: aBalance
-
-	^ aBalance - self value .! !
-
-!TransferWithdraw methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 11:58:35'!
-dispatchByType: anInstance
-
-	^anInstance dispatcherTransferWithdraw: self .! !
+!TransferWithdraw methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:44:02'!
+dispatchByTransactionKind: anInstance
+	^ anInstance processTransferWithdraw: self.! !
 
 !TransferWithdraw methodsFor: 'accessing' stamp: 'JB 9/27/2017 17:24:49'!
 transfer
@@ -922,11 +943,6 @@ value
 initializeFor: aTransfer
 
 	transfer := aTransfer .! !
-
-
-!TransferWithdraw methodsFor: 'printing' stamp: 'JB 9/28/2017 10:32:09'!
-textSummary
-	^ 'Transferencia por -' , self value printString.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -961,24 +977,13 @@ initializeFor: aValue
 	value := aValue .! !
 
 
-!Withdraw methodsFor: 'accessing' stamp: 'JB 9/27/2017 17:25:35'!
-affectBalance: aBalance
-
-	^ aBalance - self value.! !
-
-!Withdraw methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 11:59:59'!
-dispatchByType: anInstance
-
-	^anInstance dispatcherWithdraw: self .! !
+!Withdraw methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:44:02'!
+dispatchByTransactionKind: anInstance
+	^ anInstance processWithdraw: self.! !
 
 !Withdraw methodsFor: 'accessing' stamp: 'JB 9/28/2017 10:24:21'!
 value
 	^ value.! !
-
-
-!Withdraw methodsFor: 'printing' stamp: 'JB 9/28/2017 10:32:09'!
-textSummary
-	^ 'Extraccion por ' , self value printString.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1020,31 +1025,30 @@ account
 
 	^ account .! !
 
-!AccountTransferNetCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 11:56:41'!
-dispatcherCertificateOfDeposit: aCertificateOfDeposit
+!AccountTransferNetCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:41:57'!
+processCertificateOfDeposit: aCertificateOfDeposit
 	^ 0.! !
 
-!AccountTransferNetCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 11:57:04'!
-dispatcherDeposit: aDeposit
+!AccountTransferNetCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:23'!
+processDeposit: aDeposit
 	^ 0.! !
 
-!AccountTransferNetCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 11:55:22'!
-dispatcherTransferDeposit: aTransferDeposit
-	^aTransferDeposit value .! !
+!AccountTransferNetCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:39'!
+processTransferDeposit: aTransferDeposit
+	^ aTransferDeposit value.! !
 
-!AccountTransferNetCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 11:56:09'!
-dispatcherTransferWithdraw: aTransferWithdraw
-	^(aTransferWithdraw value) negated .! !
+!AccountTransferNetCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:42:52'!
+processTransferWithdraw: aTransferWithdraw
+	^ aTransferWithdraw value negated.! !
 
-!AccountTransferNetCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 11:57:15'!
-dispatcherWithdraw: aWithdraw
+!AccountTransferNetCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:43:05'!
+processWithdraw: aWithdraw
 	^ 0.! !
 
-!AccountTransferNetCalculator methodsFor: 'accessing' stamp: 'Damian Fuman 9/28/2017 11:58:09'!
+!AccountTransferNetCalculator methodsFor: 'accessing' stamp: 'JB 9/28/2017 13:47:12'!
 transferNet
-	
-	^ self account transactions sum: [ :trans |
-		trans dispatchByType: self ] .! !
+	^ self account transactions sum: [ :aTransaction |
+		aTransaction dispatchByTransactionKind: self ].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1288,10 +1292,10 @@ initialize
 	transactions := OrderedCollection new.! !
 
 
-!ReceptiveAccount methodsFor: 'transactions' stamp: 'JB 9/27/2017 17:36:27'!
+!ReceptiveAccount methodsFor: 'transactions' stamp: 'JB 9/28/2017 13:37:52'!
 balance
 
-	^ transactions inject: 0 into: [ :balance :transaction | transaction affectBalance: balance ] .! !
+	^ (AccountBalanceCalculator for: self) balance .! !
 
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'JB 9/27/2017 17:36:31'!
 register: aTransaction
