@@ -265,43 +265,29 @@ Object subclass: #Cabin	instanceVariableNames: 'elevator state door motor curre
 	
 	^true! !!CabinMovingState methodsFor: 'visitor' stamp: 'HAW 10/4/2017 14:07:12'!accept: aVisitor
 
-	aVisitor visitCabinMoving: self! !!CabinMovingState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:13'!closeCabinDoorWhenWorking
-
-	^ elevatorController closeCabinDoorWhenWorkingAndCabinMoving! !!CabinMovingState methodsFor: 'actions' stamp: 'HAW 10/3/2017 19:51:03'!closeDoor
+	aVisitor visitCabinMoving: self! !!CabinMovingState methodsFor: 'actions' stamp: 'HAW 10/3/2017 19:51:03'!closeDoor
 	
-	cabin closeDoorWhenMoving! !!CabinMovingState methodsFor: 'cabin door events' stamp: 'HernanWilkinson 7/15/2011 18:17'!cabinDoorClosedWhenWorking
-	
-	^elevatorController cabinDoorClosedWhenWorkingAndCabinMoving! !CabinState subclass: #CabinStoppedState	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!!CabinStoppedState methodsFor: 'visitor' stamp: 'HAW 10/4/2017 14:07:50'!accept: aVisitor
+	cabin closeDoorWhenMoving! !CabinState subclass: #CabinStoppedState	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!!CabinStoppedState methodsFor: 'visitor' stamp: 'HAW 10/4/2017 14:07:50'!accept: aVisitor
 
 	aVisitor visitCabinStopped: self! !!CabinStoppedState methodsFor: 'actions' stamp: 'HAW 10/3/2017 19:56:06'!closeDoor
 	
-	cabin closeDoorWhenStopped! !!CabinStoppedState methodsFor: 'cabin door events' stamp: 'HernanWilkinson 7/15/2011 17:55'!cabinDoorClosedWhenWorking
-	
-	^ elevatorController cabinDoorClosedWhenWorkingAndCabinStopped! !!CabinStoppedState methodsFor: 'cabin door events' stamp: 'HernanWilkinson 7/15/2011 18:01'!cabinDoorOpenedWhenWorking
-	
-	^elevatorController cabinDoorOpenedWhenWorkingAndCabinStopped! !!CabinStoppedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 15:53:39'!isStopped
+	cabin closeDoorWhenStopped! !!CabinStoppedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 15:53:39'!isStopped
 
 	^true! !!CabinStoppedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:29:42'!isWaitingForPeople
 
 	^false! !!CabinStoppedState methodsFor: 'testing' stamp: 'HAW 10/3/2017 16:19:55'!isMoving
 	
-	^false! !!CabinStoppedState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:14'!closeCabinDoorWhenWorking
-	
-	^elevatorController closeCabinDoorWhenWorkingAndCabinStopped! !CabinState subclass: #CabinWaitingForPeopleState	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!!CabinWaitingForPeopleState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:30:07'!isStopped
+	^false! !CabinState subclass: #CabinWaitingForPeopleState	instanceVariableNames: ''	classVariableNames: ''	poolDictionaries: ''	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!!CabinWaitingForPeopleState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:30:07'!isStopped
 
 	^false! !!CabinWaitingForPeopleState methodsFor: 'testing' stamp: 'HAW 10/3/2017 19:39:02'!isWaitingForPeople
 	
 	^true! !!CabinWaitingForPeopleState methodsFor: 'testing' stamp: 'HAW 10/3/2017 20:29:50'!isMoving
 
-	^false! !!CabinWaitingForPeopleState methodsFor: 'button events' stamp: 'HernanWilkinson 7/15/2011 18:11'!closeCabinDoorWhenWorking
-	
-	^ elevatorController closeCabinDoorWhenWorkingAndWaitingForPeople! !!CabinWaitingForPeopleState methodsFor: 'actions' stamp: 'HAW 10/3/2017 19:44:54'!closeDoor
+	^false! !!CabinWaitingForPeopleState methodsFor: 'actions' stamp: 'HAW 10/3/2017 19:44:54'!closeDoor
 	
 	cabin closeDoorWhenWaitingForPeople! !!CabinWaitingForPeopleState methodsFor: 'visitor' stamp: 'HAW 10/4/2017 14:19:42'!accept: aVisitor
 
-	aVisitor visitCabinWaitingForPeople: self! !!CabinWaitingForPeopleState methodsFor: 'cabin events' stamp: 'HernanWilkinson 7/15/2011 18:08'!waitForPeopleTimedOutWhenWorking
-	
-	^elevatorController waitForPeopleTimedOutWhenWorkingAndCabinWaitingForPeople! !Object subclass: #Elevator	instanceVariableNames: 'cabin state floorsToGo'	classVariableNames: ''	poolDictionaries: ''	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!!Elevator methodsFor: 'actions - private' stamp: 'DamianFurman 10/13/2017 15:56'!reachedFloorToStop
+	aVisitor visitCabinWaitingForPeople: self! !Object subclass: #Elevator	instanceVariableNames: 'cabin state floorsToGo'	classVariableNames: ''	poolDictionaries: ''	category: 'ElevatorConsole-Simple with Cabin-Door-Motor-Ejercicio'!!Elevator methodsFor: 'actions - private' stamp: 'DamianFurman 10/13/2017 15:56'!reachedFloorToStop
 	
 	floorsToGo removeFirst .! !!Elevator methodsFor: 'actions - private' stamp: 'HAW 10/3/2017 16:11:45'!queFloorToGo: aFloorNumber
 
